@@ -8,9 +8,10 @@ services:
     build: .
     #ports:
      # - 3000:3000
+
 # create nginx service
   nginx:
-    image:nginx:latest
+    image: nginx:latest
     volumes:
       -  ./conf.d:/etc/nginx/conf.d
     depends_on:
