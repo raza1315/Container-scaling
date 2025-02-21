@@ -9,8 +9,10 @@ COPY package.*json .
 #Install pm2 and other dependencies:
 RUN npm i -g pm2 && npm i
 
+COPY . .
+
 # Expose the port your app runs on (Not exposing here because autoscaling )
-EXPOSE 3000
+
 
 # Start the app with PM2 Runtime (keeps the container alive)
-CMD ["pm2-runtime","index.js"] 
+CMD ["node","index.js"] 
