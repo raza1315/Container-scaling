@@ -8,6 +8,6 @@ app.listen(PORT,()=>{console.log(`Server running on port ${PORT} and host: ${os.
 
 app.get("/",(req,res)=>{
 console.log("hostname:",os.hostname());
-res.status(200).json(`Server on Host ${os.hostname():${PORT}}`);
+res.status(200).json(`Server on Host ${os.hostname()}:${PORT}`);
 })
 
