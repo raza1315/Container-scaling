@@ -13,7 +13,7 @@ services:
   nginx:
     image: nginx:latest
     volumes:
-      -  ./conf.d:/etc/nginx/conf.d
+       -  ./conf.d:/etc/nginx/conf.d
     depends_on:
       - api
     ports:
