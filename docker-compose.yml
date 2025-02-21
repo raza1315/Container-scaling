@@ -3,8 +3,17 @@ version: "3.0"
 services:
   # Node.js server
   api:
-    container_name: nodejs_api
+    #commented container_name because of scaling and same for ports expose
+    #container_name: nodejs_api
     build: .
+    #ports:
+     # - 3000:3000
+# create nginx service
+  nginx:
+    image:nginx:latest
+    volumes:
+      -  ./conf.d:/etc/nginx/conf.d
+    depends_on:
+      - api
     ports:
-      - 3000:3000
-
+      -  3000:80
