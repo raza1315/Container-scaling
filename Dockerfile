@@ -15,4 +15,4 @@ COPY . .
 
 
 # Start the app with PM2 Runtime (keeps the container alive)
-CMD ["pm2-runtime","index.js"] 
+CMD ["pm2-runtime", "start", "index.js", "-i", "max"]
