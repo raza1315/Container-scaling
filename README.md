@@ -17,18 +17,22 @@ This **Dockerfile** defines our Node.js service:
 # Use a base Node.js image
 FROM node:alpine
 
-# Set working directory
+# Set the working directory inside the container
 WORKDIR /usr/src/app
 
-# Copy package.json and install dependencies
-COPY package.json package-lock.json ./
-RUN npm install
+# Copy package.json and package-lock.json first (for better caching)
+COPY package.*json . 
 
-# Copy the rest of the application
+#Install pm2 and other dependencies:
+RUN npm i -g pm2 && npm i
+
 COPY . .
 
-# Start the Node.js server
-CMD ["node", "index.js"]
+# Expose the port your app runs on (Not exposing here because autoscaling )
+
+
+# Start the app with PM2 Runtime (keeps the container alive)
+CMD ["pm2-runtime", "start", "index.js", "-i", "max"]
 ```
 
 **Note:** We do not expose ports here, as NGINX will handle all incoming traffic.
