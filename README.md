@@ -60,7 +60,7 @@ server {
 ---
 
 ### Step 3: Define `docker-compose.yml`
-This **docker-compose** file defines two services:
+This **docker-compose** file defines two services in the userdefined bridge network (<prefix of the rootdir_>my-network):
 1. **API (Node.js server)**
 2. **NGINX (Load balancer, depends on API)**
 
