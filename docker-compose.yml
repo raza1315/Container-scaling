@@ -1,13 +1,13 @@
-version: "3.0"
-
 services:
   # Node.js server
-  api:
+  node-server:
     #commented container_name because of scaling and same for ports expose
-    #container_name: nodejs_api
+    #container_name: nodejs_server
     build: .
     #ports:
      # - 3000:3000
+    networks:
+    - my-network
 
 # create nginx service
   nginx:
@@ -15,6 +15,11 @@ services:
     volumes:
        -  ./conf.d:/etc/nginx/conf.d
     depends_on:
-      - api
+      - node-server
     ports:
       -  3000:80
+    networks:
+    - my-network
+
+networks:
+  my-network:
