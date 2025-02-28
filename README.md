@@ -10,7 +10,7 @@ This project demonstrates how to scale Node.js containers using **Docker Compose
 
 ## Setup Guide
 
-### Step 1: Create `Dockerfile` for Node.js API
+### Step 1: Create `Dockerfile` for Node.js node-server
 This **Dockerfile** defines our Node.js service:
 
 ```dockerfile
@@ -49,7 +49,7 @@ server {
     listen 80;
 
     location / {
-        proxy_pass http://api:3000;  # Forward requests to Node.js service
+        proxy_pass http://node-server:3000;  # Forward requests to Node.js service
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -61,24 +61,35 @@ server {
 
 ### Step 3: Define `docker-compose.yml`
 This **docker-compose** file defines two services in the userdefined bridge network (<prefix of the rootdir_>my-network):
-1. **API (Node.js server)**
-2. **NGINX (Load balancer, depends on API)**
+1. **node-server (Node.js server)**
+2. **NGINX (Load balancer, depends on node-server)**
 
 ```yaml
-version: "3.8"
-
 services:
-  api:
+  # Node.js server
+  node-server:
+    #commented container_name because of scaling and same for ports expose
+    #container_name: nodejs_server
     build: .
+    #ports:
+     # - 3000:3000
+    networks:
+    - my-network
 
+# create nginx service
   nginx:
     image: nginx:latest
     volumes:
-      - ./conf.d:/etc/nginx/conf.d
+       -  ./conf.d:/etc/nginx/conf.d
     depends_on:
-      - api
+      - node-server
     ports:
-      - "3000:80"  # Expose NGINX on port 3000
+      -  3000:80
+    networks:
+    - my-network
+
+networks:
+  my-network:
 ```
 
 ---
@@ -92,22 +103,22 @@ docker-compose build
 
 ### Step 2: Start the Containers
 ```sh
-docker-compose up --scale api=2
+docker-compose up --scale node-server=2
 ```
-This command starts **2 instances** of the API container and **1 NGINX container**.
+This command starts **2 instances** of the node-server container and **1 NGINX container**.
 
 ### Step 3: Test the Load Balancer
 Open a browser or use `curl`:
 ```sh
 curl http://localhost:3000
 ```
-NGINX will forward the request to one of the available **API containers**.
+NGINX will forward the request to one of the available **node-server containers**.
 
 ---
 
 ## Conclusion
-- **NGINX** acts as a **load balancer**, distributing requests across multiple API containers.
-- The **Node.js API does not expose ports**, making it accessible only through **NGINX**.
+- **NGINX** acts as a **load balancer**, distributing requests across multiple node-server containers.
+- The **Node.js node-server does not expose ports**, making it accessible only through **NGINX**.
 - **Docker Compose** enables easy **horizontal scaling** using the `--scale` flag.
 
 ---
@@ -121,7 +132,7 @@ docker-compose down
 ---
 
 ## Additional Notes
-- You can increase the number of API instances by changing `--scale api=2` to a higher number.
-- Ensure that `my_conf.conf` correctly points to the service name (`api`) used in `docker-compose.yml`.
+- You can increase the number of node-server instances by changing `--scale node-server=2` to a higher number.
+- Ensure that `my_conf.conf` correctly points to the service name (`node-server`) used in `docker-compose.yml`.
 - Modify the **NGINX configuration** if you need additional routes or custom load balancing strategies.
 
